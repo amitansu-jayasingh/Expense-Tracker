@@ -1,0 +1,114 @@
+﻿@model ExpenseTracker.Models.Budget?
+@{
+    ViewData["Title"] = "Budget";
+    var totalSpent = (decimal)ViewBag.TotalSpent;
+    var currentMonth = (string)ViewBag.CurrentMonth;
+    var hasbudget = Model != null;
+    var limit = hasbudget ? Model!.MonthlyLimit : 0;
+    var remaining = limit - totalSpent;
+    var percentage = limit > 0 ? (int)((totalSpent / limit) * 100) : 0;
+    var barColor = percentage >= 90 ? "#A32D2D" :
+                   percentage >= 70 ? "#854F0B" : "#185FA5";
+}
+
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1 fw-semibold">Budget</h2>
+            <p class="text-muted small mb-0">@currentMonth</p>
+        </div>
+        <a asp-action="SetBudget" class="btn btn-sm px-3 py-2"
+           style="background-color:#185FA5; color:white; border-radius:8px;">
+            @(hasbudget ? "Edit Budget" : "+ Set Budget")
+        </a>
+    </div>
+
+    @if (!hasbudget)
+    {
+        <div class="card p-5 text-center">
+            <i class="bi bi-bullseye"
+               style="font-size:2.5rem; color:#185FA5;"></i>
+            <h5 class="mt-3">No budget set</h5>
+            <p class="text-muted small">
+                Set a monthly limit to track your spending!
+            </p>
+            <a asp-action="SetBudget" style="color:#185FA5;">
+                + Set your monthly budget
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <p class="text-muted small mb-1">Monthly Limit</p>
+                    <h3 class="fw-semibold" style="color:#185FA5;">
+                        ₹@limit.ToString("N2")
+                    </h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <p class="text-muted small mb-1">Total Spent</p>
+                    <h3 class="fw-semibold" style="color:#A32D2D;">
+                        ₹@totalSpent.ToString("N2")
+                    </h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <p class="text-muted small mb-1">Remaining</p>
+                    <h3 class="fw-semibold"
+                        style="color:@(remaining >= 0 ? "#0F6E56" : "#A32D2D")">
+                        ₹@remaining.ToString("N2")
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="small fw-semibold">Spending Progress</span>
+                <span class="small text-muted">@percentage% used</span>
+            </div>
+            <div class="progress" style="height:12px; border-radius:99px;">
+                <div class="progress-bar"
+                     style="width:@(Math.Min(percentage, 100))%;
+                                background-color:@barColor;
+                                border-radius:99px;
+                                transition: width 0.5s ease;">
+                </div>
+            </div>
+            <div class="d-flex justify-content-between mt-2">
+                <span class="small text-muted">₹0</span>
+                <span class="small text-muted">₹@limit.ToString("N2")</span>
+            </div>
+
+            @if (percentage >= 90)
+            {
+                <div class="alert mt-3 mb-0 py-2 px-3"
+                     style="background-color:#FCEBEB;
+                                    color:#A32D2D;
+                                    border:none;
+                                    border-radius:8px;
+                                    font-size:13px;">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Warning! You've used @percentage% of your budget!
+                </div>
+            }
+            else if (percentage >= 70)
+            {
+                <div class="alert mt-3 mb-0 py-2 px-3"
+                     style="background-color:#FAEEDA;
+                                    color:#854F0B;
+                                    border:none;
+                                    border-radius:8px;
+                                    font-size:13px;">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Heads up! You've used @percentage% of your budget.
+                </div>
+            }
+        </div>
+    }
+</div>
