@@ -7,7 +7,7 @@ and **SQL Server** to track expenses, set budgets, and analyze spending patterns
 
 ## 🖥️ Live Preview
 
-![Dashboard Preview](screenshot.png)
+![Dashboard Preview](screenshots/dashboard.png)
 
 ---
 
